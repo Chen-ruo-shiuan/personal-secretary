@@ -98,8 +98,8 @@ export async function POST(req: NextRequest) {
       let targets = candidates
       if (parsed.time) {
         targets = targets.filter((e: { start_at: string }) => {
-          const t = new Date(e.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false })
-          return t === parsed.time
+          const t = new Date(e.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' })
+          return t === parsed.time!.padStart(5, '0')
         })
       }
       if (parsed.keyword) {
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       }
       if (targets.length > 1) {
         const list = targets.map((e: { start_at: string; title: string }) => {
-          const t = new Date(e.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false })
+          const t = new Date(e.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' })
           return `• ${t} ${e.title}`
         }).join('\n')
         await pushMessage(userId, [textMessage(`找到多筆行程，請加上時間或名稱縮小範圍：\n${list}`)])
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
 
       const target = targets[0]
       await supabase.from('events').delete().eq('id', target.id)
-      const t = new Date(target.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false })
+      const t = new Date(target.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' })
       await pushMessage(userId, [textMessage(`🗑️ 已刪除行程\n📅 ${parsed.date} ${t} ${target.title}`)])
       continue
     }
@@ -148,8 +148,8 @@ export async function POST(req: NextRequest) {
 
       let targets = candidates ?? []
       if (oldParsed.time) targets = targets.filter((e: { start_at: string }) => {
-        const t = new Date(e.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false })
-        return t === oldParsed.time
+        const t = new Date(e.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' })
+        return t === oldParsed.time!.padStart(5, '0')
       })
       if (oldParsed.keyword) targets = targets.filter((e: { title: string }) => e.title.includes(oldParsed.keyword!))
 
@@ -190,7 +190,7 @@ export async function POST(req: NextRequest) {
         await pushMessage(userId, [textMessage('今天沒有行程 😊')])
       } else {
         const list = data.map((e: { start_at: string; title: string; category: string }) => {
-          const t = new Date(e.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false })
+          const t = new Date(e.start_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' })
           return `${e.category === 'work' ? '💼' : '🌸'} ${t} ${e.title}`
         }).join('\n')
         await pushMessage(userId, [textMessage(`📅 今日行程\n\n${list}`)])
@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
         const list = data.map((e: { start_at: string; title: string; category: string }) => {
           const d = new Date(e.start_at)
           const weekday = ['日', '一', '二', '三', '四', '五', '六'][d.getDay()]
-          const t = d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false })
+          const t = d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' })
           return `${e.category === 'work' ? '💼' : '🌸'} 週${weekday} ${t} ${e.title}`
         }).join('\n')
         await pushMessage(userId, [textMessage(`📅 本週行程\n\n${list}`)])
