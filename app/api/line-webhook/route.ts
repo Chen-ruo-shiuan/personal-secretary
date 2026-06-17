@@ -126,19 +126,19 @@ export async function POST(req: NextRequest) {
       continue
     }
 
-    // 改期：改期 6/23 16:00 羽毛球 → 6/25 18:00
+    // 改期：改期 6/23 16:00 羽毛球 6/25 18:00
     if (text.startsWith('改期 ') || text.startsWith('更改 ')) {
       const query = text.replace(/^改期\s+|^更改\s+/, '')
-      // 格式：舊日期 舊時間 標題 → 新日期 新時間
-      const match = query.match(/^(.+?)\s*[→->]\s*(\d{1,2}\/\d{1,2})\s+(\d{1,2}:\d{2})$/)
+      // 格式：舊日期 舊時間 標題 新日期 新時間（最後兩個 token 是新日期時間）
+      const match = query.match(/^(.+?)\s+(\d{1,2}\/\d{1,2})\s+(\d{1,2}:\d{2})$/)
       if (!match) {
-        await pushMessage(userId, [textMessage('格式：改期 6/23 16:00 羽毛球 → 6/25 18:00')])
+        await pushMessage(userId, [textMessage('格式：改期 6/23 16:00 羽毛球 6/25 18:00')])
         continue
       }
       const [, oldPart, newDateStr, newTime] = match
       const oldParsed = parseDeleteText(oldPart.trim())
       if (!oldParsed) {
-        await pushMessage(userId, [textMessage('格式：改期 6/23 16:00 羽毛球 → 6/25 18:00')])
+        await pushMessage(userId, [textMessage('格式：改期 6/23 16:00 羽毛球 6/25 18:00')])
         continue
       }
 
@@ -233,8 +233,8 @@ export async function POST(req: NextRequest) {
         '🗑️ 刪除行程：\n' +
         '刪除 6/28 14:00 羽毛球\n\n' +
         '🔄 改期：\n' +
-        '改期 6/28 14:00 羽毛球 → 6/30 16:00\n\n' +
-        '💡 靈感：[內容] → 存靈感庫\n\n' +
+        '改期 6/28 14:00 羽毛球 6/30 16:00\n\n' +
+        '💡 靈感：內容\n\n' +
         '今天 → 今日行程\n' +
         '本週 → 本週行程'
       )])
